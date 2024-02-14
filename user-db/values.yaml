@@ -1,0 +1,12 @@
+config:
+  name: database-user-service
+secret:
+  name: user-service-password
+job:
+  name: create-database
+  labels: create-user-db
+postgres:
+  password: J3VzZXJzX3NlcnZpY2VfcGFzc3dvcmQnCg==
+application:
+  namespace: development
+  password: dXNlcnNfc2VydmljZV9wYXNzd29yZA==

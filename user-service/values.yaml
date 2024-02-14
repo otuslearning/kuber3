@@ -1,0 +1,21 @@
+host:
+  name: arch.homework
+application:
+  namespace: development
+  name: user-service
+  label: user-service
+  service:
+    port: 80
+  container:
+    port: 8080
+    env:
+      - key: DB_HOST
+        value: database-postgresql
+      - key: DB_NAME
+        value: users_db
+      - key: DB_USERNAME
+        value: users_service
+  replicaCount: 2
+  image:
+#    repository: otuslearning/user-service:0.0.2
+    repository: otuslearning/user-service:latest

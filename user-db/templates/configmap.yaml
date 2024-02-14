@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.config.name }}
+  namespace: {{ .Values.application.namespace }}
+data:
+  create.sql: |
+    CREATE USER users_service WITH PASSWORD :PSWORD;
+    CREATE DATABASE users_db with owner users_service;

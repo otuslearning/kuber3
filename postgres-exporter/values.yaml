@@ -1,0 +1,8 @@
+config:
+  datasource:
+    host: database-postgresql.development
+    passwordSecret:
+      name: database-postgresql
+      key: postgres-password
+  extraArgs:
+    - "--collector.stat_statements"

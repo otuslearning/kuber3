@@ -1,0 +1,6 @@
+namespace: development
+global:
+  postgresql:
+    auth:
+      password: password
+postgresqlSharedPreloadLibraries: "pgaudit,pg_stat_statements"

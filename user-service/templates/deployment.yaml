@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.application.namespace }}
+  name: "{{ .Values.application.name }}-dep"
+  labels:
+    app: {{ .Values.application.label }}
+spec:
+  replicas: {{ .Values.application.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.application.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.application.label }}
+    spec:
+      containers:
+        - name: "{{ .Values.application.name }}-app"
+          image: {{ .Values.application.image.repository }}
+          ports:
+            - containerPort: {{ .Values.application.container.port }}
+          env:
+            {{- range .Values.application.container.env }}
+            - name: {{ .key }}
+              value: {{ .value }}
+            {{- end }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-password
+                  key: password
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.application.container.port }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.application.container.port }}

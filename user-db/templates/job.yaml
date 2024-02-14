@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.job.name }}
+  namespace: {{ .Values.application.namespace }}
+spec:
+  template:
+    metadata:
+      name:  {{ .Values.job.name }}
+      labels:
+        app: {{ .Values.job.labels }}
+    spec:
+      containers:
+        - image: "docker.io/bitnami/postgresql"
+          name: create-database
+          command:
+            - /bin/sh
+            - -c
+            - |
+              psql --host database-postgresql -U postgres -d postgres -p 5432 \
+              -v PSWORD="$USER_SERVICE_PASSWORD" -a -f /init.sql/create.sql
+          volumeMounts:
+            - name: create-database-users
+              mountPath: /init.sql
+          env:
+            - name: USER_SERVICE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: create-password
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-postgresql
+                  key: postgres-password
+      restartPolicy: Never
+      volumes:
+        - name: create-database-users
+          configMap:
+            name: {{ .Values.config.name }}

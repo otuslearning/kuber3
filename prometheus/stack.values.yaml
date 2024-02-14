@@ -1,0 +1,51 @@
+# https://github.com/prometheus-community/helm-charts.git
+nameOverride: prometheus-stack
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: password
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.arch.homework
+prometheus:
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.arch.homework
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: 'spring-boot'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        kubernetes_sd_configs:
+          - role: pod
+            selectors:
+              - role: "pod"
+                label: "app=user-service"
+        relabel_configs:
+          # Добавляем лейбл instance (в нём будет имя пода)
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            regex: (.*)
+            target_label: instance
+            replacement: $1
+            action: replace
+          - source_labels: [ '__meta_kubernetes_pod_name' ]
+            regex: '.*'
+            action: keep
+          - source_labels: [ '__meta_kubernetes_pod_container_name' ]
+            regex: '.*'
+            action: keep
+      - job_name: 'ingress-metrics'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'ingress-nginx-controller-metrics.ingress-nginx:10254' ]
+            labels:
+              application: 'ingress-nginx'
+      - job_name: 'postgres-exporter'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'postgres-exporter-prometheus-postgres-exporter.development' ]
+            labels:
+              application: 'postgres-exporter'
