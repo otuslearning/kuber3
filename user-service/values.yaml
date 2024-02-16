@@ -17,5 +17,4 @@ application:
         value: users_service
   replicaCount: 2
   image:
-#    repository: otuslearning/user-service:0.0.2
-    repository: otuslearning/user-service:latest
+    repository: otuslearning/user-service:0.0.3
